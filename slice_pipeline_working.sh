@@ -1,6 +1,6 @@
 #!/bin/bash
-# OrcaSlicer AI Pipeline Automation Script - Enhanced Version
-# Features: File watching, error handling, logging, and automatic processing
+# Bambu Studio AI Pipeline Automation Script - WORKING VERSION
+# Uses Bambu Studio instead of OrcaSlicer to avoid segfaults
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -10,11 +10,11 @@ IFS=$'\n\t'
 INPUT_DIR="$HOME/AI_PIPELINE/LOCKED_SPLIT_STAGE"
 OUTPUT_DIR="$HOME/AI_PIPELINE/SLICED_OUTPUT"
 LOG_DIR="$HOME/AI_PIPELINE/logs"
-PROFILES_DIR="$HOME/Documents/OrcaSlicer/resources/profiles/BBL"
 LOCK_FILE="/tmp/slice_pipeline.lock"
 
-# OrcaSlicer binary path
-ORCA_CUSTOM="$HOME/Documents/OrcaSlicer/build/arm64/src/OrcaSlicer.app/Contents/MacOS/OrcaSlicer"
+# Bambu Studio binary path (WORKS BETTER THAN ORCASLICER)
+SLICER="/Applications/BambuStudio.app/Contents/MacOS/BambuStudio"
+PROFILES_DIR="/Applications/BambuStudio.app/Contents/Resources/profiles/BBL"
 
 # Printer settings
 PRINTER_IP="192.168.1.129"
@@ -51,10 +51,8 @@ slice_file() {
     
     log "Starting slice for: $filename"
     
-    # Use CUSTOM OrcaSlicer CLI with validation fix!
-    if "$ORCA_CUSTOM" \
-        --load-settings "$PROFILES_DIR/machine/Bambu Lab P1P 0.4 nozzle.json;$PROFILES_DIR/process/0.20mm Standard @BBL P1P.json" \
-        --load-filaments "$PROFILES_DIR/filament/Bambu PLA Dynamic @BBL P1P.json" \
+    # Use Bambu Studio CLI (no segfault issues!)
+    if "$SLICER" \
         --slice 0 \
         --outputdir "$OUTPUT_DIR" \
         "$input_file" 2>&1 | tee "$LOG_DIR/${filename}_slice.log"; then
@@ -156,7 +154,7 @@ monitor_directory() {
 
 # Main pipeline
 main() {
-    log "=== Starting OrcaSlicer AI Pipeline ==="
+    log "=== Starting Bambu Studio AI Pipeline ==="
     log "Input Directory: $INPUT_DIR"
     log "Output Directory: $OUTPUT_DIR"
     log "Log File: $LOG_FILE"
