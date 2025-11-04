@@ -1,0 +1,37 @@
+# Build logs and outputs
+*.log
+build.log
+build_final_attempt.log
+build_with_policy.log
+
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Binary and model files
+*.stl
+*.3mf
+*.gcode
+*.ini
+*.json
+*.sql
+
+# Local development files
+*.local
+
+# Logs directory
+logs/
+
+# Test outputs
+TEST_ENDPOINT_SUMMARY.md
