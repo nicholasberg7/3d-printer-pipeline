@@ -37,15 +37,15 @@ def load_stl_binary(filepath):
         
         triangles = []
         for _ in range(num_triangles):
-            normal = np.frombuffer(f.read(12), dtype=np.float32)
-            v1 = np.frombuffer(f.read(12), dtype=np.float32)
-            v2 = np.frombuffer(f.read(12), dtype=np.float32)
-            v3 = np.frombuffer(f.read(12), dtype=np.float32)
+            normal = np.frombuffer(f.read(12), dtype=np.float32).copy()
+            v1 = np.frombuffer(f.read(12), dtype=np.float32).copy()
+            v2 = np.frombuffer(f.read(12), dtype=np.float32).copy()
+            v3 = np.frombuffer(f.read(12), dtype=np.float32).copy()
             f.read(2)  # attribute
             
             triangles.append({
                 'normal': normal,
-                'vertices': [v1, v2, v3],
+                'vertices': (v1, v2, v3),  # Store as tuple
                 'center': (v1 + v2 + v3) / 3.0
             })
     
@@ -117,14 +117,23 @@ def classify_triangle_anatomical(tri, bounds):
 def save_stl_binary(filepath, triangles):
     """Save triangles to binary STL file"""
     with open(filepath, 'wb') as f:
+        # Header (80 bytes)
         header = b'Anatomical Part - Color Split' + b' ' * 50
         f.write(header[:80])
+        
+        # Number of triangles (4 bytes)
         f.write(np.uint32(len(triangles)).tobytes())
         
+        # Write each triangle
         for tri in triangles:
+            # Normal vector (12 bytes = 3 floats) - already float32
             f.write(tri['normal'].tobytes())
+            
+            # Three vertices (36 bytes = 9 floats) - already float32
             for vertex in tri['vertices']:
                 f.write(vertex.tobytes())
+            
+            # Attribute byte count (2 bytes)
             f.write(np.uint16(0).tobytes())
 
 def split_by_anatomy(input_file, output_dir):
